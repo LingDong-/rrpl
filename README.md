@@ -29,7 +29,7 @@ A building block is a string of the alphabet {`0`, `1`, `2`, `3`, `4`, `5`, `6`,
 <table>
 <tr><th>Result</th><th>Code</th><th>Result</th><th>Code</th><tr>
 <tr>
-<td><svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><g stroke='#EDEDED' stroke-width='3'><line x1='14' y1='14' x2='64' y2='64'/>,<line x1='64' y1='14' x2='64' y2='64'/>,<line x1='114' y1='14' x2='64' y2='64'/>,<line x1='114' y1='64' x2='64' y2='64'/>,<line x1='114' y1='114' x2='64' y2='64'/>,<line x1='64' y1='114' x2='64' y2='64'/>,<line x1='14' y1='114' x2='64' y2='64'/>,<line x1='14' y1='64' x2='64' y2='64'/></g><g stroke='black' stroke-width='3'><line x1='114' y1='64' x2='64' y2='64'/>,<line x1='14' y1='64' x2='64' y2='64'/></g></svg></td><td><code>48</code></td>
+<td><img src="./doc/svg/1.svg"></td><td><code>48</code></td>
 <td><svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><g stroke='#EDEDED' stroke-width='3'><line x1='14' y1='14' x2='64' y2='64'/>,<line x1='64' y1='14' x2='64' y2='64'/>,<line x1='114' y1='14' x2='64' y2='64'/>,<line x1='114' y1='64' x2='64' y2='64'/>,<line x1='114' y1='114' x2='64' y2='64'/>,<line x1='64' y1='114' x2='64' y2='64'/>,<line x1='14' y1='114' x2='64' y2='64'/>,<line x1='14' y1='64' x2='64' y2='64'/></g><g stroke='black' stroke-width='3'><line x1='64' y1='14' x2='64' y2='64'/>,<line x1='114' y1='64' x2='64' y2='64'/>,<line x1='114' y1='114' x2='64' y2='64'/>,<line x1='14' y1='114' x2='64' y2='64'/>,<line x1='14' y1='64' x2='64' y2='64'/></g></svg></td><td><code>24578</code></td>
 </tr>
 </table>
