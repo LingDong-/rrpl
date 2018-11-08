@@ -1,0 +1,164 @@
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
+<head>
+  <style>
+  body {
+    background-color: linen;
+    margin:50px;
+  }
+  #main{
+    text-align: center;
+  }
+  .parser-cell {
+    width: 640px;
+    height: 256px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    margin: 20px;
+  }
+  .render-cell {
+    width: 256px;
+    height: 256px;
+    max-width: 256px;
+    max-height: 256px;
+  }
+  .source-cell{
+    width: 364px;
+    height: 236px;
+    max-width: 364px;
+    max-height: 236px;
+    overflow: scroll;
+    font-family: monospace;
+    font-size: 26px;
+  }
+  .source-cell:focus {
+    outline: none;
+  }
+  .vertical-rule{
+    width: 0px;
+    height: 230px;
+    border-left: 1px solid gainsboro;
+    border-right: 1px solid silver;
+  }
+  .source-container{
+    padding:10px;
+  }
+  .big-button{
+    color:grey;
+    font-size:32px;
+    text-align: center;
+    line-height: 31px;
+    font-family: monospace;
+    width:32px;
+    height: 32px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    margin: 20px;
+    cursor: pointer;
+  -webkit-touch-callout: none;
+    -webkit-user-select: none; 
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+  }
+  </style>
+</head>
+
+<body>
+  <h1>RRPL Interactive Demo</h1>
+  <i>Describing Chinese Characters with Recursive Radical Packing Language (<a href="https://github.com/LingDong-/rrpl">Details</a>)</i>
+  <div id="main"></div>
+  <div class="big-button" onclick="newCell();">+</div>
+  <script src="rrpl_parser.js"></script>
+  <script src="render.js"></script>
+  <script>
+
+    var cell_template = `  
+      <div class="parser-cell">
+        <table>
+          <tr>
+            <td class="render-cell"></td>
+            <td><div class="vertical-rule"></div></td>
+            <td class="source-container"><div class="source-cell" contenteditable="true"></div></td>
+          </tr>
+        </table>
+      <div>
+    `
+    var rcells;
+    var scells;
+    function newCell(){
+      document.getElementById("main").innerHTML += cell_template;
+      rcells = document.getElementsByClassName("render-cell");
+      scells = document.getElementsByClassName("source-cell");
+      if (examples != undefined){
+        scells[scells.length-1].innerHTML = randExample();
+      }
+    }
+    newCell();newCell();
+    var data = undefined
+    var examples = undefined
+    function loadJSON(filename,callback) {   
+      var xobj = new XMLHttpRequest();
+      xobj.overrideMimeType("application/json");
+      xobj.open('GET', filename, true);
+      xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4) {
+          callback(JSON.parse(xobj.responseText));
+        }
+      };
+      xobj.send(null);  
+    }
+    function randExample(){
+      var keys = Object.keys(examples)
+      return examples[keys[Math.floor(Math.random()*keys.length)]];
+    }
+
+    loadJSON("./dist/min-trad-compiled.json",(x)=>(data=x))
+    loadJSON("./dist/min-trad.json",function(x){
+      examples=x
+      for (var i = 0; i < rcells.length; i++){
+        scells[i].innerHTML = randExample();
+      }
+    })
+
+    if (scells.length > 0){
+      scells[0].focus();
+    }
+
+    function renderStr(X){
+      var vdict = {"_0":X}
+      parser.preprocess(vdict,data)
+      var conf = {gri:true,xof:28,yof:28,wid:200,hei:200,col:"black"}
+      var c = "";
+      while (count(vdict["_0"], "(") < count(vdict["_0"],")")){
+        vdict["_0"]="("+vdict["_0"]
+      }
+      for (var j = 0; j < 10; j++){
+        try{
+          c = renderChar(parser.parse(vdict["_0"]),conf)
+          break;
+        }catch (e){
+          vdict["_0"]+=")"
+        }
+      }
+      if (!c.length){
+        c = "<text x='128' y='128' color='black' style='font-family:monospace;font-size:20px;'>?</text>"
+      }
+      return "<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'>"+c+"</svg>"  
+    }
+
+    function update(){
+      if (data != undefined){
+        for (var i = 0; i < rcells.length; i++){
+          // console.log(scells[i].innerHTML);
+          rcells[i].innerHTML = renderStr(scells[i].innerText);
+        }
+      }
+      setTimeout(update,200)
+    }
+    update()
+  </script>
+
+</body>
