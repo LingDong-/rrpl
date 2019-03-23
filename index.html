@@ -2,11 +2,16 @@
 <head>
   <style>
   body {
-    background-color: linen;
+    background-color: whitesmoke;
     margin:50px;
+    font-family: sans-serif;
   }
   #main{
     text-align: center;
+  }
+  @keyframes expand-in {
+    from {height: 2px;}
+    to {height:256px ;}
   }
   .parser-cell {
     width: 640px;
@@ -14,7 +19,12 @@
     background-color: white;
     border-radius: 8px;
     box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
-    margin: 20px;
+    margin: 5px;
+    margin-left: 20px;
+    margin-right: 20px;
+    animation-name: expand-in;
+    animation-duration: 0.2s;
+    /*animation-fill-mode: forwards;*/
   }
   .render-cell {
     width: 256px;
@@ -43,6 +53,27 @@
   .source-container{
     padding:10px;
   }
+  .insert-container{
+    width: 640px;
+    border: 1px solid rgba(0,0,0,0);
+    height: 32px;
+    margin:0px;
+    margin-left:20px;
+    opacity:0;
+    transition: 0.2s;
+  }
+  .insert-container:hover{
+    opacity:1;
+  }
+  .insert-rule{
+    width: 640px;
+    border-top: 1px solid gainsboro;
+    border-bottom: 1px solid silver;
+    height: 0px;
+    margin:0px;
+    margin-top:16px;
+    margin-bottom:16px;
+  }
   .big-button{
     color:grey;
     font-size:32px;
@@ -54,7 +85,8 @@
     background-color: white;
     border-radius: 16px;
     box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
-    margin: 20px;
+    /*margin: 20px;*/
+    /*margin-left: calc(50% - 16px);*/
     cursor: pointer;
   -webkit-touch-callout: none;
     -webkit-user-select: none; 
@@ -63,6 +95,17 @@
         -ms-user-select: none;
             user-select: none;
   }
+  .insert-button{
+    position: relative;
+    left: 304px;
+    top: -16px;
+  }
+  #instructions{
+    position: absolute;
+    left:0px;
+    top:0px;
+    color: grey;
+  }
   </style>
 </head>
 
@@ -70,7 +113,8 @@
   <h1>RRPL Interactive Demo</h1>
   <i>Describing Chinese Characters with Recursive Radical Packing Language (<a href="https://github.com/LingDong-/rrpl">Details</a>)</i>
   <div id="main"></div>
-  <div class="big-button" onclick="newCell();">+</div>
+  <div id="instructions">
+  </div>
   <script src="rrpl_parser.js"></script>
   <script src="render.js"></script>
   <script>
@@ -86,17 +130,84 @@
         </table>
       <div>
     `
+    var btn_template = `
+      <div class='insert-container'>
+        <div class='insert-rule'>
+          <div class="big-button insert-button" onclick="newCell(this);">+</div>
+        </div>
+      </div>
+    `
+
+    function fromHTML(htmlString) {
+      var div = document.createElement('div');
+      div.innerHTML = htmlString.trim();
+      return div.firstChild; 
+    }
     var rcells;
     var scells;
-    function newCell(){
-      document.getElementById("main").innerHTML += cell_template;
+    var scrolling = undefined;
+
+    function smoothScrollIntoView(elt){
+      if (scrolling != undefined && scrolling != elt){
+        return;
+      }
+      scrolling = elt;
+      var targ = elt.offsetTop-window.innerHeight*0.4+elt.offsetHeight/2;
+      var oldtop = document.body.scrollTop;
+      var y = document.body.scrollTop;
+      y = y * 0.9 + (targ) * 0.1;
+      document.body.scrollTop = y;
+      if (Math.abs(document.body.scrollTop-oldtop) < 1)
+      {
+        scrolling = undefined;
+        return;
+      }else{
+        setTimeout(function(){smoothScrollIntoView(elt)}, 10); 
+      }  
+    }
+
+    function newCell(btn){
+      var main = document.getElementById("main");
+      var cell = fromHTML(cell_template)
+      if (btn == undefined){
+        main.appendChild(fromHTML(btn_template))
+        main.appendChild(cell);
+      }else{
+        main.insertBefore(fromHTML(btn_template),btn.parentNode.parentNode)
+        main.insertBefore(cell,btn.parentNode.parentNode)
+      }
+      
       rcells = document.getElementsByClassName("render-cell");
       scells = document.getElementsByClassName("source-cell");
-      if (examples != undefined){
-        scells[scells.length-1].innerHTML = randExample();
-      }
+
+      console.log((typeof smoothScrollIntoView));
+      smoothScrollIntoView(cell)
+
+      ;(function(){
+        var btn_ = btn;
+        setTimeout(function(){
+          if (examples != undefined){
+            var idx;
+            if (btn_ != undefined){
+              idx = Array.from(document.getElementsByClassName("insert-button")).indexOf(btn_)-1;
+            }else{
+              idx = scells.length-1
+            }
+            scells[idx].innerHTML = randExample();
+          }
+        },200)
+      })()
     }
+
     newCell();newCell();
+    document.getElementById("main").appendChild(fromHTML(btn_template));
+    setInterval(function(){
+      var div = document.getElementById("instructions");
+      div.style.left = (800)+"px"
+      div.style.top = document.body.scrollTop
+    },10)
+
+
     var data = undefined
     var examples = undefined
     function loadJSON(filename,callback) {   
