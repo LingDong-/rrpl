@@ -15,14 +15,13 @@
 
 // check if string doesn't contain references
 function pure(s){
-  var chars = "012345678|-()"
-  for (var i = 0; i < s.length; i++){
-    if (!chars.includes(s[i])){
-      return false
-    }
-  }
+ var chars = /^[0-9|()-]+$/;
+ if(s.match(chars))
   return true;
+ else
+  return false;
 }
+
 
 // expand all references
 function preprocess(dict, src_dict){
