@@ -15,7 +15,7 @@
 
 // check if string doesn't contain references
 function pure(s){
- var chars = /^[0-9|()-]+$/;
+ var chars = /^[0-8|()-]+$/;
  if(s.match(chars))
   return true;
  else
