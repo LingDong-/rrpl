@@ -13,7 +13,7 @@ font.familyname = "RRPL"
 
 for f in glob(sys.argv[1]):
     hx = int(os.path.splitext(os.path.basename(f))[0],16)
-    print hx,
+    print(hx,end=" ")
     glyph = font.createChar(hx)
     glyph.importOutlines(f)
     glyph.width = 1000
